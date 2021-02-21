@@ -4,13 +4,9 @@ parse.py -- Parse OCR file containing account entries
 
 import argparse
 
-from typing import Iterable, List
+from typing import Generator, Iterable, List
 
-from .core import ENCODING_MAP, flat
-
-
-def to_ord(s: str) -> List[int]:
-    return [ord(ch) for ch in s]
+from .core import ENCODING_MAP, matrix_to_bytes, to_ord
 
 
 def checksum(account_no: str) -> int:
@@ -23,8 +19,7 @@ def verify_checksum(account_no: str) -> bool:
     return checksum(account_no) % 11 == 0
 
 
-def lines_to_digits(lines: List[str]) -> str:
-    digits = []
+def lines_to_digits(lines: List[str]) -> Generator:
     for x in range(9):
         sl = slice(3 * x, 3 * x + 3)
         d = [
@@ -32,38 +27,48 @@ def lines_to_digits(lines: List[str]) -> str:
             to_ord(lines[1][sl]),
             to_ord(lines[2][sl]),
         ]
-        digits.append(d)
-    return [flat(d) for d in digits]
+        yield matrix_to_bytes(d)
 
 
-def main(args: argparse.Namespace) -> None:
-    """
-    CLI entry point for parsing OCR file into account numbers.
-    """
+def digits_to_account_no(digits: Iterable[bytes]) -> str:
+    return "".join(
+        ENCODING_MAP.get(d, "?") for d in digits
+    )
+
+
+def parse_file_to_lines(fp) -> Generator:
     while True:
         try:
-            lines = [l.strip("\n").ljust(27) for l in [
-                next(args.infile),
-                next(args.infile),
-                next(args.infile),
+            yield [l.strip("\n").ljust(27) for l in [
+                next(fp),
+                next(fp),
+                next(fp),
             ]]
         except StopIteration:
             break
         else:
-
-            print("".join(str(ENCODING_MAP.get(d, "?")) for d in lines_to_digits(lines)), file=args.outfile)
-
-        # read and dismiss newline
-        next(args.infile)
+            # read and dismiss newline
+            next(fp)
 
 
-def add_checksum(args: argparse.Namespace):
+def parse(args: argparse.Namespace) -> None:
     """
-    CLI entry point for adding ERR after account number if checksum
-    is invalid.
+    CLI entry point for parsing OCR file into account numbers.
     """
-    for line in args.infile:
-        account_no = line.strip("\n")
+    for lines in parse_file_to_lines(args.infile):
+        digits_gen = lines_to_digits(lines)
+        account_no = digits_to_account_no(digits_gen)
+        print(account_no, file=args.outfile)
+
+
+def check(args: argparse.Namespace) -> None:
+    """
+    CLI entry point for adding ERR/ILL after account number if
+    checksum is invalid.
+    """
+    for lines in parse_file_to_lines(args.infile):
+        digits_gen = lines_to_digits(lines)
+        account_no = digits_to_account_no(digits_gen)
         info = ""
         if "?" in account_no:
             info = "ILL"

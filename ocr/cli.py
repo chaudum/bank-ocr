@@ -5,26 +5,25 @@ ocr.py -- Main entry point for CLI
 import argparse
 import sys
 
-from .generate import main as g
-from .parse import main as p
-from .parse import add_checksum
+from .generate import main as generate
+from .parse import parse, check
 
 
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     commands = parser.add_subparsers(title="subcommands")
 
-    generate = commands.add_parser("generate")
-    generate.add_argument("--entries", "-n", type=int, default=500)
-    generate.set_defaults(func=g)
+    cmd_generate = commands.add_parser("generate")
+    cmd_generate.add_argument("--entries", "-n", type=int, default=500)
+    cmd_generate.set_defaults(func=generate)
 
-    parse = commands.add_parser("parse")
-    parse.add_argument("--infile", type=argparse.FileType("r"), default=sys.stdin)
-    parse.set_defaults(func=p)
+    cmd_parse = commands.add_parser("parse")
+    cmd_parse.add_argument("--infile", type=argparse.FileType("r"), default=sys.stdin)
+    cmd_parse.set_defaults(func=parse)
 
-    parse = commands.add_parser("check")
-    parse.add_argument("--infile", type=argparse.FileType("r"), default=sys.stdin)
-    parse.set_defaults(func=add_checksum)
+    cmd_check = commands.add_parser("check")
+    cmd_check.add_argument("--infile", type=argparse.FileType("r"), default=sys.stdin)
+    cmd_check.set_defaults(func=check)
 
     parser.add_argument("--outfile", type=argparse.FileType("w"), default=sys.stdout)
     parser.set_defaults(func=None)

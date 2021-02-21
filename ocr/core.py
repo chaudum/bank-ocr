@@ -2,11 +2,31 @@
 core.py -- Core functionality
 """
 
-from typing import List
+from typing import Iterable, List
 
-# Flatten 2-dimensional array
-def flat(digit: List[List[int]]) -> bytes:
+from .types import Matrix
+
+
+def matrix_to_bytes(digit: Matrix) -> bytes:
+    """
+    Convert 2d matrix (3x3) into bytes array.
+    """
     return bytes([i for j in digit for i in j])
+
+
+def to_ord(s: Iterable) -> List[int]:
+    return [ord(ch) for ch in s]
+
+
+def bytes_to_matrix(digit: bytes) -> Matrix:
+    """
+    Convert bytes array into 2d matrix (3x3).
+    """
+    return [
+        to_ord(digit[0:3]),
+        to_ord(digit[3:6]),
+        to_ord(digit[6:9]),
+    ]
 
 
 # ordinals for the 3 different characters
@@ -31,5 +51,13 @@ DIGITS = {
 }
 
 ENCODING_MAP = {
-    flat(v): int(k) for k, v in DIGITS.items()
+    matrix_to_bytes(v): k for k, v in DIGITS.items()
+}
+
+ALTERNATIVES = {
+    "0": ["8"],
+    "1": ["7"],
+    "5": ["9", "6"],
+    "6": ["8"],
+    "9": ["8"],
 }

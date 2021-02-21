@@ -17,9 +17,8 @@ import argparse
 import random
 import sys
 
-from typing import List
-
 from .core import DIGITS
+from .types import Matrix
 
 
 def digits_to_lines(value: int) -> str:
@@ -31,7 +30,7 @@ def digits_to_lines(value: int) -> str:
     return lines
 
 
-def print_lines(lines: List[List[int]], file=None) -> None:
+def print_lines(lines: Matrix, file=None) -> None:
     for line in lines:
         print("".join(chr(ch) for ch in line), file=file)
 

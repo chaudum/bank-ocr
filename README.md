@@ -38,5 +38,5 @@ To generate a `testfile.ocr`, run the `generate` command:
 ### User Story 2 + 3
 
 ```
-(env) cat testfile.ocr | bank-ocr parse | bank-ocr check
+(env) cat testfile.ocr | bank-ocr check
 ```
