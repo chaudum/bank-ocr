@@ -23,6 +23,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     cmd_check = commands.add_parser("check")
     cmd_check.add_argument("--infile", type=argparse.FileType("r"), default=sys.stdin)
+    cmd_check.add_argument("--fixit", action="store_true", default=False)
     cmd_check.set_defaults(func=check)
 
     parser.add_argument("--outfile", type=argparse.FileType("w"), default=sys.stdout)

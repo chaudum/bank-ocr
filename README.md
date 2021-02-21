@@ -40,3 +40,9 @@ To generate a `testfile.ocr`, run the `generate` command:
 ```
 (env) cat testfile.ocr | bank-ocr check
 ```
+
+### User Story 4
+
+```
+(env) cat testfile.ocr | bank-ocr check --fixit
+```

@@ -1,22 +1,11 @@
-"""
-parse.py -- Parse OCR file containing account entries
-"""
-
 import argparse
+import itertools
 
 from typing import Generator, Iterable, List
 
-from .core import ENCODING_MAP, matrix_to_bytes, to_ord
-
-
-def checksum(account_no: str) -> int:
-    if len(account_no) > 0:
-        return int(account_no[0]) * len(account_no) + checksum(account_no[1:])
-    return 0
-
-
-def verify_checksum(account_no: str) -> bool:
-    return checksum(account_no) % 11 == 0
+from .checksum import verify_checksum
+from .core import ALTERNATIVES, ENCODING_MAP, matrix_to_bytes, to_ord
+from .guess import alternatives, best_guess, permutate
 
 
 def lines_to_digits(lines: List[str]) -> Generator:
@@ -30,10 +19,35 @@ def lines_to_digits(lines: List[str]) -> Generator:
         yield matrix_to_bytes(d)
 
 
-def digits_to_account_no(digits: Iterable[bytes]) -> str:
-    return "".join(
-        ENCODING_MAP.get(d, "?") for d in digits
-    )
+def digits_to_account_no(digits: Iterable[bytes], autofix=False) -> str:
+    tmp = [d for d in digits]
+    account_no = "".join(ENCODING_MAP.get(d, "?") for d in tmp)
+    info = ""
+    if "?" in account_no:
+        if autofix:
+            alt = [a for a in alternatives([best_guess(d) for d in tmp]) if verify_checksum(a)]
+            if len(alt) == 0:
+                info = "ERR"
+            elif len(alt) == 1:
+                account_no = alt[0]
+                info = "CORR"
+            elif len(alt) > 1:
+                info = "AMB"
+        else:
+            info = "ILL"
+    elif not verify_checksum(account_no):
+        if autofix:
+            alt = [a for a in permutate(account_no) if verify_checksum(a)]
+            if len(alt) == 0:
+                info = "ERR"
+            elif len(alt) == 1:
+                account_no = alt[0]
+                info = "CORR"
+            elif len(alt) > 1:
+                info = "AMB"
+        else:
+            info = "ERR"
+    return account_no, info
 
 
 def parse_file_to_lines(fp) -> Generator:
@@ -57,7 +71,7 @@ def parse(args: argparse.Namespace) -> None:
     """
     for lines in parse_file_to_lines(args.infile):
         digits_gen = lines_to_digits(lines)
-        account_no = digits_to_account_no(digits_gen)
+        account_no, info = digits_to_account_no(digits_gen)
         print(account_no, file=args.outfile)
 
 
@@ -68,10 +82,5 @@ def check(args: argparse.Namespace) -> None:
     """
     for lines in parse_file_to_lines(args.infile):
         digits_gen = lines_to_digits(lines)
-        account_no = digits_to_account_no(digits_gen)
-        info = ""
-        if "?" in account_no:
-            info = "ILL"
-        elif not verify_checksum(account_no):
-            info = "ERR"
+        account_no, info = digits_to_account_no(digits_gen, autofix=args.fixit)
         print(account_no, info, file=args.outfile)
