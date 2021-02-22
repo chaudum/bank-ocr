@@ -32,7 +32,7 @@ def digits_to_account_no(digits_gen: Generator[str, None, None], check=False, au
                 elif len(alt) == 1:
                     digit_str = alt[0]
                 elif len(alt) > 1:
-                    info = f"AMB {alt}"
+                    info = "AMB"
             else:
                 info = "ILL"
         elif not verify_checksum(digit_str):
@@ -44,7 +44,7 @@ def digits_to_account_no(digits_gen: Generator[str, None, None], check=False, au
                 elif len(alt) == 1:
                     digit_str = alt[0]
                 elif len(alt) > 1:
-                    info = f"AMB {alt}"
+                    info = "AMB"
             else:
                 info = "ERR"
 
