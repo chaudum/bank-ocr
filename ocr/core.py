@@ -7,57 +7,126 @@ from typing import Iterable, List
 from .types import Matrix
 
 
-def matrix_to_bytes(digit: Matrix) -> bytes:
+def hexlify(i: int) -> str:
     """
-    Convert 2d matrix (3x3) into bytes array.
+    Convert integer into a HEX string representation
+
+    >>> hexlify(1)
+    1
+    >>> hexlify(10)
+    A
+    >>> hexlify(255)
+    FF
     """
-    return bytes([i for j in digit for i in j])
+
+    return str.upper("{:0x}".format(i))
 
 
-def to_ord(s: Iterable) -> List[int]:
-    return [ord(ch) for ch in s]
-
-
-def bytes_to_matrix(digit: bytes) -> Matrix:
+def splice(s: str, l: int) -> List[str]:
     """
-    Convert bytes array into 2d matrix (3x3).
+    Convert character sequence `s` into list of strings with length `l`.
+
+    >>> splice("123456", 3)
+    ["123", "456"]
+
+    >>> splice("abcdef", 2)
+    ["ab", "cd", "ef"]
+
+    >>> splice("123", 5)
+    ["123  "]
     """
-    return [
-        to_ord(digit[0:3]),
-        to_ord(digit[3:6]),
-        to_ord(digit[6:9]),
-    ]
+
+    if len(s) > l:
+        return [s[0:l]] + splice(s[l:], l)
+    else:
+        return [s[0:].ljust(l)]
 
 
-# ordinals for the 3 different characters
-# S(pace)
-# H(orizontal)
-# V(ertical)
-S, H, V = ord(" "), ord("_"), ord("|")
+_HEX_DIGITS = [
+    (
+        " _ "
+        "| |"
+        "|_|"
+    ),
+    (
+        "   "
+        "  |"
+        "  |"
+    ),
+    (
+        " _ "
+        " _|"
+        "|_ "
+    ),
+    (
+        " _ "
+        " _|"
+        " _|"
+    ),
+    (
+        "   "
+        "|_|"
+        "  |"
+    ),
+    (
+        " _ "
+        "|_ "
+        " _|"
+    ),
+    (
+        " _ "
+        "|_ "
+        "|_|"
+    ),
+    (
+        " _ "
+        "  |"
+        "  |"
+    ),
+    (
+        " _ "
+        "|_|"
+        "|_|"
+    ),
+    (
+        " _ "
+        "|_|"
+        " _|"
+    ),
+    (
+        " _ "
+        "|_|"
+        "| |"
+    ),
+    (
+        " _ "
+        "|_\\"
+        "|_/"
+    ),
+    (
+        " _ "
+        "|  "
+        "|_ "
+    ),
+    (
+        " _ "
+        "| \\"
+        "|_/"
+    ),
+    (
+        " _ "
+        "|_ "
+        "|_ "
+    ),
+    (
+        " _ "
+        "|_ "
+        "|  "
+    ),
+]
 
-# Map of digit (0..9) to 3x3 matrix
-# Each digit is represented by 3 ordinal numbers in 3 lines
-DIGITS = {
-    "0": [[S, H, S], [V, S, V], [V, H, V]],
-    "1": [[S, S, S], [S, S, V], [S, S, V]],
-    "2": [[S, H, S], [S, H, V], [V, H, S]],
-    "3": [[S, H, S], [S, H, V], [S, H, V]],
-    "4": [[S, S, S], [V, H, V], [S, S, V]],
-    "5": [[S, H, S], [V, H, S], [S, H, V]],
-    "6": [[S, H, S], [V, H, S], [V, H, V]],
-    "7": [[S, H, S], [S, S, V], [S, S, V]],
-    "8": [[S, H, S], [V, H, V], [V, H, V]],
-    "9": [[S, H, S], [V, H, V], [S, H, V]],
-}
+HEX_DIGITS = {hexlify(idx): [i for i in splice(x, 3)] for idx, x in enumerate(_HEX_DIGITS)}
 
 ENCODING_MAP = {
-    matrix_to_bytes(v): k for k, v in DIGITS.items()
-}
-
-ALTERNATIVES = {
-    "0": "8",
-    "1": "7",
-    "5": "96",
-    "6": "8",
-    "9": "8",
+    item: hexlify(idx) for idx, item in enumerate(_HEX_DIGITS)
 }

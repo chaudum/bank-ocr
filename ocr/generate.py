@@ -17,26 +17,24 @@ import argparse
 import random
 import sys
 
-from .core import DIGITS
-from .types import Matrix
+from typing import List
+
+from .core import ENCODING_MAP, HEX_DIGITS
 
 
-def digits_to_lines(value: int) -> str:
+def digits_to_lines(chars: str) -> List[str]:
     lines = [[], [], []]
-    for i in str(value):
-        digit = DIGITS[i]
+    for ch in chars:
+        digit = HEX_DIGITS[ch]
         for idx, line in enumerate(lines):
             lines[idx] += digit[idx]
     return lines
 
 
-def print_lines(lines: Matrix, file=None) -> None:
-    for line in lines:
-        print("".join(chr(ch) for ch in line), file=file)
-
-
 def main(args: argparse.Namespace):
+    chars = list(ENCODING_MAP.values())
     for n in range(args.entries):
-        x = random.randint(111111111, 999999999)
-        print_lines(digits_to_lines(x), file=args.outfile)
-        print()
+        x = "".join(random.choice(chars) for _ in range(9))
+        for line in digits_to_lines(x):
+            print("".join(line), file=args.outfile)
+        print("", file=args.outfile)

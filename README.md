@@ -43,7 +43,7 @@ Use the `--check` argument to report validty of the parsed account numbers.
 (env) cat testfile.ocr | bank-ocr parse --check
 ```
 
-### User Story 4
+### User Story 4 + 5
 
 Use the `--fixit` argument to replace invalid or ambiguous digits of invalid account numbers with a best guess.
 
