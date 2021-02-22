@@ -4,8 +4,6 @@ core.py -- Core functionality
 
 from typing import Iterable, List
 
-from .types import Matrix
-
 
 def hexlify(i: int) -> str:
     """

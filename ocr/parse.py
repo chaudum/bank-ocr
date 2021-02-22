@@ -1,7 +1,6 @@
 import argparse
 import itertools
-
-from typing import Generator, Iterable, List
+from typing import Generator, Iterable, List, Tuple
 
 from .checksum import verify_checksum
 from .core import ENCODING_MAP
@@ -17,7 +16,7 @@ def parse_lines_to_digits(lines: List[str], n: int = 3, l: int = 9) -> Generator
         yield "".join([line[sl] for line in lines])
 
 
-def digits_to_account_no(digits_gen: Generator[str, None, None], check=False, autofix=False) -> str:
+def digits_to_account_no(digits_gen: Generator[str, None, None], check=False, autofix=False) -> Tuple[str, str]:
     digits = [d for d in digits_gen]
     digit_str = "".join(ENCODING_MAP.get(d, "?") for d in digits)
 
@@ -73,7 +72,7 @@ def main(args: argparse.Namespace) -> None:
     """
     for lines in parse_file_to_lines(args.infile):
         digits_gen = parse_lines_to_digits(lines)
-        account_no, info = digits_to_account_no(
+        digit_str, info = digits_to_account_no(
             digits_gen, check=args.check, autofix=args.fixit,
         )
-        print(account_no, info, file=args.outfile)
+        print(digit_str, info, file=args.outfile)

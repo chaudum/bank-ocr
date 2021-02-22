@@ -1,5 +1,4 @@
 import itertools
-
 from typing import Dict, Generator, List
 
 from .core import _HEX_DIGITS, ENCODING_MAP, hexlify
@@ -40,7 +39,7 @@ ALTERNATIVES = {
     hexlify(idx): best_guess(item, yield_exact_match=False) for idx, item in enumerate(_HEX_DIGITS)
 }
 
-def permutate(digit_str: str) -> List[str]:
+def permutate(digit_str: str) -> Generator[str, None, None]:
     """
     Yield all permutations of a digit string by replacing a single digit of a
     digit string with a best match (add or remove single character).
@@ -48,7 +47,7 @@ def permutate(digit_str: str) -> List[str]:
     for idx, d in enumerate(digit_str):
         if d in ALTERNATIVES:
             # copy character sequence into list of strings
-            alt = [x for x in digit_str] 
+            alt = [[x] for x in digit_str] 
             # replace string at index `idx` with a list of possible alternatives
             alt[idx] = ALTERNATIVES[d]
             yield from alternatives(alt)

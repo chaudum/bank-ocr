@@ -16,14 +16,13 @@ optional arguments:
 import argparse
 import random
 import sys
-
 from typing import List
 
 from .core import ENCODING_MAP, HEX_DIGITS
 
 
 def digits_to_lines(chars: str) -> List[str]:
-    lines = [[], [], []]
+    lines: List[str] = ["", "", ""]
     for ch in chars:
         digit = HEX_DIGITS[ch]
         for idx, line in enumerate(lines):
