@@ -37,12 +37,16 @@ To generate a `testfile.ocr`, run the `generate` command:
 
 ### User Story 2 + 3
 
+Use the `--check` argument to report validty of the parsed account numbers.
+
 ```
-(env) cat testfile.ocr | bank-ocr check
+(env) cat testfile.ocr | bank-ocr parse --check
 ```
 
 ### User Story 4
 
+Use the `--fixit` argument to replace invalid or ambiguous digits of invalid account numbers with a best guess.
+
 ```
-(env) cat testfile.ocr | bank-ocr check --fixit
+(env) cat testfile.ocr | bank-ocr parse --check --fixit
 ```

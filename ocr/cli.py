@@ -6,7 +6,7 @@ import argparse
 import sys
 
 from .generate import main as generate
-from .parse import parse, check
+from .parse import main as parse
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -19,12 +19,9 @@ def get_parser() -> argparse.ArgumentParser:
 
     cmd_parse = commands.add_parser("parse")
     cmd_parse.add_argument("--infile", type=argparse.FileType("r"), default=sys.stdin)
+    cmd_parse.add_argument("--check", action="store_true", default=False)
+    cmd_parse.add_argument("--fixit", action="store_true", default=False)
     cmd_parse.set_defaults(func=parse)
-
-    cmd_check = commands.add_parser("check")
-    cmd_check.add_argument("--infile", type=argparse.FileType("r"), default=sys.stdin)
-    cmd_check.add_argument("--fixit", action="store_true", default=False)
-    cmd_check.set_defaults(func=check)
 
     parser.add_argument("--outfile", type=argparse.FileType("w"), default=sys.stdout)
     parser.set_defaults(func=None)
