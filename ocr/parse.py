@@ -51,7 +51,13 @@ def digits_to_account_no(digits_gen: Generator[str, None, None], check=False, au
     return digit_str, info
 
 
-def parse_file_to_lines(fp) -> Generator:
+def parse_file_to_lines(fp) -> Generator[List[str], None, None]:
+    """
+    Read input file `fp` in batches of three lines and yield them as list of
+    strings.
+    Read fourth line (delimiter line) and dismiss the content.
+    Repeat until end of file.
+    """
     while True:
         try:
             yield [l.strip("\n").ljust(27) for l in [

@@ -18,7 +18,12 @@ import random
 import sys
 from typing import List
 
-from .core import ENCODING_MAP, HEX_DIGITS
+from .core import _HEX_DIGITS, hexlify, splice
+
+
+HEX_DIGITS = {
+    hexlify(idx): [i for i in splice(x, 3)] for idx, x in enumerate(_HEX_DIGITS)
+}
 
 
 def digits_to_lines(chars: str) -> List[str]:
@@ -31,7 +36,7 @@ def digits_to_lines(chars: str) -> List[str]:
 
 
 def main(args: argparse.Namespace):
-    chars = list(ENCODING_MAP.values())
+    chars = list(HEX_DIGITS.keys())
     for n in range(args.entries):
         x = "".join(random.choice(chars) for _ in range(9))
         for line in digits_to_lines(x):

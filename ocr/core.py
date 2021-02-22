@@ -2,7 +2,7 @@
 core.py -- Core functionality
 """
 
-from typing import Iterable, List
+from typing import List
 
 
 def hexlify(i: int) -> str:
@@ -122,8 +122,6 @@ _HEX_DIGITS = [
         "|  "
     ),
 ]
-
-HEX_DIGITS = {hexlify(idx): [i for i in splice(x, 3)] for idx, x in enumerate(_HEX_DIGITS)}
 
 ENCODING_MAP = {
     item: hexlify(idx) for idx, item in enumerate(_HEX_DIGITS)
